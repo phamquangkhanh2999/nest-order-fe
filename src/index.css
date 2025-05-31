@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply text-gray-800 font-sans;
+  }
+}
+
+@layer utilities {
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Custom Ant Design styles */
+.ant-table-wrapper .ant-table-thead > tr > th {
+  @apply bg-gray-50 text-gray-700 font-semibold;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  @apply text-gray-600;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr:hover > td {
+  @apply bg-blue-50;
+}
+
+.ant-pagination-item-active {
+  @apply border-blue-600 !important;
+}
+
+.ant-pagination-item-active a {
+  @apply text-blue-600 !important;
+}
+
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused {
+  @apply border-blue-600 shadow-none !important;
+}
+
+.ant-picker:hover,
+.ant-picker-focused {
+  @apply border-blue-600 !important;
+}
+
+.ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+  @apply bg-blue-600 !important;
+}
+
+.ant-btn-primary {
+  @apply bg-blue-600 !important;
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 640px) {
+  .ant-table {
+    @apply -mx-4;
+  }
+  
+  .ant-table-pagination {
+    @apply flex-wrap justify-center;
+  }
+  
+  .ant-picker-range {
+    @apply w-full;
+  }
+  
+  .ant-space {
+    @apply w-full;
+  }
+  
+  .ant-space-item {
+    @apply w-full;
+  }
+}
+
+/* Table Responsive Styles */
+.custom-table .ant-table-cell {
+  @apply whitespace-normal break-words;
+}
+
+.custom-table .ant-table-row:hover {
+  @apply cursor-pointer;
+}
