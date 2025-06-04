@@ -137,6 +137,14 @@ function App() {
       render: (text) => <div className="text-gray-600">{text}</div>,
     },
     {
+      title: 'Link đơn hàng',
+      dataIndex: 'form_url',
+      key: 'form_url',
+      width: 150,
+      responsive: ['lg'],
+      render: (text) => <div className="text-gray-600">{text}</div>,
+    },
+    {
       title: 'Địa chỉ',
       dataIndex: 'address',
       key: 'address',
@@ -307,7 +315,7 @@ function App() {
               </Title>
               <div className="text-sm text-gray-500">
                 Tổng số:{' '}
-                <span className="font-semibold text-blue-600">{data?.data?.length || 0}</span> đơn
+                <span className="font-semibold text-blue-600">{data?.data?.total || 0}</span> đơn
                 hàng
               </div>
             </div>
