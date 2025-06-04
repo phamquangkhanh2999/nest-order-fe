@@ -1,22 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Card, DatePicker, Divider, Form, Input, Space, Table, Typography } from 'antd';
+import { Button, Card, Divider, Form, Input, Space, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { Filter, RefreshCw, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import ErrorState from './components/ErrorState';
 import Footer from './components/Layout/Footer';
 import Header from './components/Layout/Header';
-import LoadingState from './components/LoadingState';
 import { useByOrder } from './services/api';
 import { UserSubmission } from './types';
+import { sanitizeParams } from './utils/function';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const { RangePicker } = DatePicker;
 const { Title } = Typography;
 
 function App() {
@@ -99,6 +97,46 @@ function App() {
       render: (text) => <div className="text-gray-600">{text}</div>,
     },
     {
+      title: 'Utm source',
+      dataIndex: 'utm_source',
+      key: 'utm_source',
+      width: 150,
+      responsive: ['lg'],
+      render: (text) => <div className="text-gray-600">{text}</div>,
+    },
+    {
+      title: 'Utm medium',
+      dataIndex: 'utm_medium',
+      key: 'utm_medium',
+      width: 150,
+      responsive: ['lg'],
+      render: (text) => <div className="text-gray-600">{text}</div>,
+    },
+    {
+      title: 'Utm campaign',
+      dataIndex: 'utm_campaign',
+      key: 'utm_campaign',
+      width: 150,
+      responsive: ['lg'],
+      render: (text) => <div className="text-gray-600">{text}</div>,
+    },
+    {
+      title: 'Utm content',
+      dataIndex: 'utm_content',
+      key: 'utm_content',
+      width: 150,
+      responsive: ['lg'],
+      render: (text) => <div className="text-gray-600">{text}</div>,
+    },
+    {
+      title: 'Utm Term',
+      dataIndex: 'utm_term',
+      key: 'utm_term',
+      width: 150,
+      responsive: ['lg'],
+      render: (text) => <div className="text-gray-600">{text}</div>,
+    },
+    {
       title: 'Địa chỉ',
       dataIndex: 'address',
       key: 'address',
@@ -114,16 +152,19 @@ function App() {
   ];
 
   const [params, setParams] = useState<any>({
-    page: 0,
+    page: 1,
     pageSize: 20,
   });
   const [searchEnabled, setSearchEnabled] = useState(true);
   const [valueSearch, setValueSearch] = useState<any>();
   const { data, isLoading, isError, refetch } = useByOrder({
-    params: { userId: '123', status: 'approved' },
+    params: {
+      page: params.page,
+      pageSize: params.pageSize,
+      ...sanitizeParams(valueSearch)
+    },
   });
 
-  console.log('data', data);
 
   useEffect(() => {
     if (searchEnabled) {
@@ -136,7 +177,7 @@ function App() {
     setSearchEnabled(true);
     setParams({
       ...params,
-      page: 20,
+      page: 1,
     });
     setValueSearch(data);
   };
@@ -161,7 +202,7 @@ function App() {
       <Header />
 
       <main className="container mx-auto px-4 py-6 lg:px-8 lg:py-8">
-        <div className="max-w-7xl mx-auto space-y-6">
+        <div className=" p-4 space-y-6">
           {!isLoading && !isError && (
             <>
               {/* Header Section */}
@@ -222,13 +263,13 @@ function App() {
                     />
                   </Form.Item>
 
-                  <Form.Item name="dateRange" label="Khoảng thời gian" className="!mb-4">
+                  {/* <Form.Item name="dateRange" label="Khoảng thời gian" className="!mb-4">
                     <RangePicker
                       className="w-full !rounded-lg !border-gray-200 hover:!border-blue-400 focus:!border-blue-500"
                       placeholder={['Từ ngày', 'Đến ngày']}
                       size="large"
                     />
-                  </Form.Item>
+                  </Form.Item> */}
 
                   <Form.Item className="lg:col-span-3 !mb-0">
                     <div className="flex justify-end">
@@ -258,100 +299,41 @@ function App() {
             </>
           )}
 
-          {/* Content Section */}
-          {isLoading ? (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-              <LoadingState />
-            </div>
-          ) : isError ? (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-              <ErrorState
-                message="Không thể tải dữ liệu. Vui lòng thử lại."
-                onRetry={() => refetch()}
-              />
-            </div>
-          ) : (
-            <Card className="shadow-sm border-0 overflow-hidden" style={{ borderRadius: '12px' }}>
-              <div className="mb-4 flex justify-between items-center">
-                <Title level={4} className="!mb-0 !text-gray-700">
-                  Kết quả tìm kiếm
-                </Title>
-                <div className="text-sm text-gray-500">
-                  Tổng số:{' '}
-                  <span className="font-semibold text-blue-600">{data?.data?.length || 0}</span> đơn
-                  hàng
-                </div>
-              </div>
 
-              <Table
-                columns={columns}
-                dataSource={data?.data || []}
-                rowKey="phone"
-                onChange={(pagination) => onChangePage(pagination.current || 1)}
-                pagination={{
-                  pageSize: 10,
-                  showSizeChanger: true,
-                  showQuickJumper: true,
-                  showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
-                  className: 'px-4 !mt-6',
-                  size: 'default',
-                }}
-                scroll={{ x: 'max-content' }}
-                className="custom-table"
-                rowClassName={(record, index) => (index % 2 === 0 ? 'bg-gray-50/50' : 'bg-white')}
-                // style={{
-                //   // '--table-border-radius': '8px',
-                //   '--table-header-bg': 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-                // }}
-              />
-            </Card>
-          )}
+          <Card className="shadow-sm border-0 overflow-hidden" style={{ borderRadius: '12px' }}>
+            <div className="mb-4 flex justify-between items-center">
+              <Title level={4} className="!mb-0 !text-gray-700">
+                Kết quả tìm kiếm
+              </Title>
+              <div className="text-sm text-gray-500">
+                Tổng số:{' '}
+                <span className="font-semibold text-blue-600">{data?.data?.length || 0}</span> đơn
+                hàng
+              </div>
+            </div>
+
+            <Table
+              columns={columns}
+              dataSource={data?.data.content || []}
+              rowKey="phone"
+              loading={isLoading}
+              onChange={(pagination) => onChangePage(pagination.current || 1)}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
+                className: 'px-4 !mt-6',
+                size: 'default',
+              }}
+              scroll={{ x: 'max-content' }}
+              className="custom-table"
+
+            />
+          </Card>
         </div>
       </main>
-
       <Footer />
-
-      {/* <style jsx global>{`
-        .custom-table .ant-table-thead > tr > th {
-          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
-          border-bottom: 2px solid #e2e8f0 !important;
-          font-weight: 600 !important;
-          color: #374151 !important;
-          font-size: 14px !important;
-        }
-
-        .custom-table .ant-table-tbody > tr:hover > td {
-          background: #f0f9ff !important;
-        }
-
-        .custom-table .ant-table-tbody > tr > td {
-          border-bottom: 1px solid #f1f5f9 !important;
-          padding: 12px 16px !important;
-        }
-
-        .custom-table .ant-table {
-          border-radius: 8px !important;
-          overflow: hidden !important;
-        }
-
-        .ant-pagination-item-active {
-          background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
-          border-color: #3b82f6 !important;
-        }
-
-        .ant-pagination-item-active a {
-          color: white !important;
-        }
-
-        .ant-card {
-          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
-        }
-
-        .ant-card:hover {
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-          transition: box-shadow 0.3s ease !important;
-        }
-      `}</style> */}
     </div>
   );
 }
